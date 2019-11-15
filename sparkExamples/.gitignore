@@ -1,0 +1,8 @@
+.settings
+.cache-main
+.cache-tests
+.project
+.classpath
+/bin/
+/testdata/usconsesus
+/target/
