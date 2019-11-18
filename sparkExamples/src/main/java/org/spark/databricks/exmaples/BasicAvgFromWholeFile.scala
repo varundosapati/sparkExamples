@@ -23,10 +23,16 @@ object BasicAvgFromWholeFile {
     
     val inputRdd = sc.wholeTextFiles(inputFile)
     inputRdd.foreach(println)
-    val resultRDD = inputRdd.mapValues(y => y.split(" ").map(_.toDouble))
+    val resultRDD = inputRdd.mapValues(y => {
+      val nums = y.split(" ").map(_.toDouble)
+      nums.sum /nums.size.toDouble
+    } )
     
+//    println("result is "+resultRDD)
     resultRDD.foreach(println)
 //    val sum = resultRDD.sum /resultRDD.size.toDouble
+    
+    resultRDD.saveAsTextFile(outputFile)
     
   }
   

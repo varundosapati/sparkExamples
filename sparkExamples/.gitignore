@@ -4,5 +4,6 @@
 .project
 .classpath
 /bin/
+/testdata/databricks/output
 /testdata/usconsesus
 /target/
