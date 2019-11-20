@@ -5,9 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import org.apache.spark.rdd.RDD
 
 object BasicParseJsonWithJackson {
-  
+  /*
+   * input parma - 
+   * local
+		testdata\databricks\Dark_Pool_Data_Feed_jackson.json
+		testdata\databricks\output\Dark_Pool_Feed_Data_Jackson_Output.txt
+   * 
+   * 
+   */
   
   case class DarkPoolData(tick:String, industry: String, sector: String, vol:String)
   
@@ -45,7 +53,7 @@ object BasicParseJsonWithJackson {
        mapper.registerModule(DefaultScalaModule)
        
        /*
-        * We use FlatMapto handle errors by returning an empty list None if we encounter an issue
+        * We use FlatMap to handle errors by returning an empty list None if we encounter an issue
         * and list with one element if everything is ok Some(_)
         * 
         */
@@ -62,12 +70,27 @@ object BasicParseJsonWithJackson {
     
      result.collect().foreach(println)
      
+     /*
+      * We use flat map to get each of darkPoolDataList and use Map to covert darkPoolDataList to darkPoolData
+      * Use filter to get the APPL records and saveToText file      
+      */
      
-     result.flatMap(records => records.darkPoolList).filter(record => record.tick.equals("AAPL")).mapPartitions({ records => 
+     result.flatMap(records =>{ 
+       records.darkPoolList 
+       }).filter(record => record.tick.equals("AAPL")).mapPartitions({ records => 
        val mapper = new ObjectMapper with ScalaObjectMapper
        mapper.registerModule(DefaultScalaModule)
        records.map(mapper.writeValueAsString(_))       
-       
      }, true).saveAsTextFile(outputFile)
+     
+     
+     /*
+      * Below code is used if there is only single DarkPoolData
+      */
+//     result.filter(record => record.tick.equals("AAL")).mapPartitions({ records => 
+//       val mapper = new ObjectMapper with ScalaObjectMapper
+//       mapper.registerModule(DefaultScalaModule)
+//       records.map(mapper.writeValueAsString(_))       
+//     }, true).saveAsTextFile(outputFile)
   }
 }
