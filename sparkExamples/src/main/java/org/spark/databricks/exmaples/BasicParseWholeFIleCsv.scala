@@ -1,6 +1,8 @@
 package org.spark.databricks.exmaples
 
 import org.apache.spark.SparkContext
+import java.io.StringReader
+import au.com.bytecode.opencsv.CSVReader
 
 object BasicParseWholeFIleCsv {
   
@@ -14,7 +16,15 @@ object BasicParseWholeFIleCsv {
     val sc = new SparkContext(master, "BasicParseWholeFileCsv", System.getenv("SPARK_HOME"))
     val input = sc.wholeTextFiles(inputFile)
     
+    val result = input.flatMap{ case(_, txt) => 
+        val reader = new CSVReader(new StringReader(txt));
+        val content = reader.readNext()
+        println(content)
+        content
+    }
     
+    
+    println(result.collect().map(_.toList).mkString("|"))
     
    }
     

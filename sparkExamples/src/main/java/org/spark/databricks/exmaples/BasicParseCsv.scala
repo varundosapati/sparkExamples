@@ -21,11 +21,6 @@ import java.io.StringReader
 
 object BasicParseCsv {
   
-  
-  case class DarkPoolData(ticket:String, industry: String, sector: String, volume:String)
-  
-  case class DarkPoolDataList(list: List[DarkPoolData])
-  
   def main(args: Array[String]) : Unit = {
     
     val master = args.length match {
@@ -88,5 +83,9 @@ object BasicParseCsv {
     
     println("JsonString is "+jsonStr)
   }
+
+   case class DarkPoolData(ticket:String, industry: String, sector: String, volume:String)
   
+  case class DarkPoolDataList(list: List[DarkPoolData])
+
 }
