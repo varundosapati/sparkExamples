@@ -1,0 +1,5 @@
+Hello this is Spark examples 
+Spark Examples are created with scala
+Apache Spark Examples 
+This is for Spark learning session 
+spark is faster than MapReduce
