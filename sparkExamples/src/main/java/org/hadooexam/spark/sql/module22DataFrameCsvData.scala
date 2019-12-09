@@ -64,7 +64,35 @@ object module22DataFrameCsvData {
    
 //   inputDf.groupBy("auctionid", "item").count().agg(min("count"), avg("count"), max("count"))
     
+   val highPrice = inputDf.filter("price > 100")
+   println("High price record in dataframe is ")
+   highPrice.show()
+   
+   
+   /*
+    * Register dataframe as temporary table
+    */
+   
+    inputDf.registerTempTable("datatable")
+    
+    //How many bids per auction 
+    
+    val results = sqlContext.sql("select auctionid, item, count(bid) from datatable GROUP BY auctionid, item")
+    
+    //display results
+
+    results.show()
+    
+    //display max price for auctionid
+    
+   val maxresults = sqlContext.sql("select auctionid, MAX(price), FROM datatable GROUP BY item, auctionid")
+    
+    maxresults.show()
+    
+    val newResult = sqlContext.sql(" select auctionid, item, count(bid) from datatable GROUP BY auctionid, item").explain()
+    
     
   }
+  
   
 }
