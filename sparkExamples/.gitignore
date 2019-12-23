@@ -5,6 +5,7 @@
 .classpath
 /bin/
 /testdata/databricks/output
+/testdata/hadoopexam/sparkSql/output
 /testdata/hadoopexam/output
 /testdata/usconsesus
 /target/
