@@ -1,9 +1,10 @@
 package org.hadoopexam.sparksql
 
 import org.apache.spark.SparkConf
-import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 
 /*
@@ -16,7 +17,8 @@ import org.apache.spark.SparkContext
  */
 
 object module10HandsonDatasetDataFrameDepth {
-  
+   Logger.getLogger("org").setLevel(Level.ERROR)
+   
   case class Course(id:BigInt, name: String, fee : BigInt, venue : String, duration : BigInt)  
   
   def main(args : Array[String] ) : Unit = {
