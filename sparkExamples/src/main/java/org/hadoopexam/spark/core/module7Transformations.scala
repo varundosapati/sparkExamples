@@ -108,8 +108,50 @@ object module7Transformations {
   println(gb.groupByKey().collect().mkString("|"))
    
   println("Example of Join Operation ")
-    
-    
+  
+  val ja = sc.parallelize(List("blue", "green", "orange", "cucumber"), 3)
+  val jb = ja.keyBy(_.length())
+  println("First pair "+jb.collect().mkString(":"))
+  val jc = sc.parallelize(List("black", "white", "grey"), 3)
+  val jd = jc.keyBy(_.length())
+  println("Second pair "+jd.collect().mkString(":"))
+  
+  println(jb.join(jd).collect().mkString(":"))
+  
+  println("Example of left Outer join")
+  println(jb.leftOuterJoin(jd).collect().mkString(":"))
+  
+  println("Exmaple of Rightt outer Join")
+  println(jb.rightOuterJoin(jd).collect().mkString(":"))
+  
+  println("Example of full outer join")
+  println(jb.fullOuterJoin(jd).collect().mkString(":"))
+  
+  println()
+  println(" Example of reduceByKey operation ")
+  val ra = sc.parallelize(List("black", "blue", "white","green", "grey"), 3)
+//  val rb = ra.keyBy(_.length())
+  val rb = ra.map(x => (x.length(), x))
+  println(rb.reduceByKey(_+_).collect().mkString("|"))
+
+  val ra1 = sc.parallelize(List("black", "blue", "white", "orange"), 2)
+  val rb1 = ra1.map(x => (x.length(), x))
+  println(rb1.reduceByKey(_+_).collect().mkString("|"))
+  
+   println()
+   println("Example of aggregate operation")
+ 
+   val ax = sc.parallelize(List(1, 2, 7, 4, 30, 6), 3)
+   println("Aggregate with 0 of 1, 2, 7, 4, 30, 6 with 3 partitions and max function"+ax.aggregate(0)(math.max(_, _), _+_))
+  
+   val ay = sc.parallelize(List("a", "b", "c", "d"), 2)
+   println("Aggregate with initial value z of a, b, c, d with 2 partitions "+ay.aggregate("z")(_+_, _+_))
+  
+   val az = sc.parallelize(List("12", "234", "4563", "23"), 2)
+   println("Aggregate of using math with min length "+ az.aggregate("")((x, y) => math.min(x.length(), y.length()).toString(), _+_))  
+  
+   println("Aggregate of using math with max length "+az.aggregate(" ")((x, y) => math.max(x.length(), y.length()).toString(), _+_))
+   
   }
   
   
