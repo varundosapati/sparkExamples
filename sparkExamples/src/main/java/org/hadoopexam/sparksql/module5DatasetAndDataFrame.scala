@@ -3,6 +3,8 @@ package org.hadoopexam.sparksql
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SaveMode
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 /*
  * Usage - We are going to create DataFrame and DataSet from SparkContext
@@ -13,7 +15,8 @@ import org.apache.spark.sql.SaveMode
  */
 
 object module5DatasetAndDataFrame {
-
+  
+  Logger.getLogger("org").setLevel(Level.ERROR)
   //Define case class with Course Details
   case class Course(id: Int, name: String, fee: Int, venue: String, duration: Int)
 
@@ -48,6 +51,8 @@ object module5DatasetAndDataFrame {
     println("Showing Data after for inputRdd is converted to inputDs")
     inputDs.show()
       
+    val inputDf = inputDs.toDF()
+    
     //Now lets select courses conducted in mumbai and having prices more than 5000
     //NOTE : using selet which give back the DataFrame with specified columns 
     
@@ -85,6 +90,50 @@ object module5DatasetAndDataFrame {
 //   .csv(outputFile)
     .json(outputFile) 
    
+    //Some more operations on dataframes 
+    
+    println("Display the data types of each column in inputDf"+inputDf.dtypes.mkString("|"))
+    
+    println("Display number of records in inputDf "+inputDf.count)
+    
+    println("Display the column names in inputDf "+inputDf.columns.mkString("|") )
+
+    println("Dropping name colum from inputDf")
+    inputDf.drop("name").show()
+
+    println("Displaying the content in json format for inputDf")
+    inputDf.toJSON.show()
+    
+    println("select the location where coruse fee are between 4000 to 7000 and location not in mumbai ")
+    inputDf.filter(inputDf("fee").between(4000, 7000)).filter(inputDf("venue") !== "Mumbai").show()
+    
+    
+    println("Select the locations where course fee are greater than 5000 in inputDf")
+    inputDf.filter(inputDf("fee") > 5000).select("venue").show()
+    inputDf.filter(inputDf("fee") > 5000).select(inputDf("venue").alias("Location")).show()
+    
+    println("Sort the venue in projection ")
+    inputDf.sort("venue").show()
+    
+    println("Select fee greater than 4000 and sort venue ascending order and fee descing order using sort")
+    inputDf.filter(inputDf("fee") > 4000).sort($"venue", $"fee".desc).show()
+    
+    println("Select fee greater than 4000 and default sort for venue  and fee  using sort")
+    inputDf.filter(inputDf("fee") > 4000).sort($"venue", $"fee").show()
+    
+    println("Select fee greater than 4000 and order by venue and fee using order by ")
+    inputDf.filter($"fee" > 4000).orderBy("venue", "fee").show()
+    
+    
+    println("Group by the fee ")
+    inputDf.groupBy("fee").count().show()
+    
+    println("Below functions are used to remove null values from the table ")
+    inputDf.na.drop().show()
+    //TODO create and example with groupByKey on dataframe and then use filter and sort operation 
+    
+    
+  
   }
 
 }
