@@ -11,6 +11,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Row
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
+import scala.collection.immutable.Nil
 
 /*
  * Usage - We are going indepth example of Spark SQL schema 
@@ -127,6 +128,18 @@ object module11SparkSQLSchema {
    println("Displaying the dataframe records after applying schema")
    courseDf.show()
 //   sparkSession.creat
+   
+   val colorsRDD = sparkContext.parallelize(Seq("White", "blue", "Green" , "Yeallo"))
+   
+   val colorRowRDD = colorsRDD.map(x => Row(x, x.length()))
+   
+   val colorSchema = StructType(StructField("col", StringType, nullable = false) :: StructField("len", IntegerType, nullable = false) :: Nil)
+   
+   
+   val color_df = sparkSession.createDataFrame(colorRowRDD, colorSchema)
+   
+   color_df.show()
+   
    
   }
   
