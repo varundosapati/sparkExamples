@@ -15,7 +15,7 @@ import scala.math.sqrt
  * Usage Explanation
  * args(0) - local[1]
  * args(1) - testdata/udemy/spark/core/input/RatingCounter
- * args(2) - testdata/udemy/spark/core/output/MovieSimilarities 
+ * args(2) - testdata/udemy/spark/core/output/ImprovedMovieSimilarities 
  * args(3) - 50
  * 
  * For running on command line 
@@ -24,14 +24,26 @@ import scala.math.sqrt
  *  Create input folder and place u.data, u.item
  *  Create output folder
  * 
- * spark-submit  --class org.udemy.spark.core.MovieSimilarities sparkExamples-0.0.1-SNAPSHOT.jar local[1] input output 50 
+ * spark-submit  --class org.udemy.spark.core.ImprovedMovieSimilarities sparkExamples-0.0.1-SNAPSHOT.jar local[1] input output 50 
  * 
  * Running on unix machine 
  * 
  * Running on Hadoop cluster 
  */
 
-object MovieSimilarities {
+
+/*
+ * TODO -
+ * 
+ * 1) Discard bad ratings - only recommend good movies 
+ * 2) Try different similaraties technique - cosine similar techniques , Pearson coorelation coffiecient , jaccard coefficient , Conditional probability 
+ * 3) Adjust threshold fo minimum corates or minimum score 
+ * 4) Invent new similarity metric that takes numbers of corates into account 
+ * 5) Use genere information in u.items to boost scores from movies in the same genere 
+ * 
+ */
+object ImprovedMovieSimilarities {
+  
   
   def main(args: Array[String]):Unit = {
   
@@ -257,5 +269,7 @@ object MovieSimilarities {
     
     return (score, numPairs)
   }
+  
+
   
 }
