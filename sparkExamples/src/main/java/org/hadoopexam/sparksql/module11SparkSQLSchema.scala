@@ -31,12 +31,21 @@ object module11SparkSQLSchema {
     
     if(args.length <3 ) {
       println("USAGE MASTER INPUTLOC OUTPUTLOC")
-      System.exit(1)
+//      System.exit(1)
     }
     
-    val master = args(0)
-    val inputLoc = args(1)
-    val outputLoc = args(2)
+    val master = args.length match {
+      case x:Int if x>0  => args(0)
+      case _ => "local[1]"
+    } 
+    val inputLoc = args.length match {
+      case x:Int if x>1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module11SparkSQLSchema\\"
+    }
+    val outputLoc = args.length match {
+      case x:Int if x> 2 => args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module11SparkSQLSchema\\"
+    } 
     
     val sparkConf = new SparkConf().setMaster(master).setAppName("module11SparkSQLSchema")
     
@@ -71,6 +80,7 @@ object module11SparkSQLSchema {
    val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
      import sparkSession.implicits._
 
+   
    //Another way creating schema using DSL 
    
    val schemaDsl = new StructType().add($"course_id".int).add($"course_name".string)
