@@ -18,7 +18,7 @@ About Reader and Writer in DataFrame, DataSet and Streams
 	
 	RowSchema : 
 		Row schema will always have schema attached to it if you are not specifying a schema 
-		RowEncoder take care of assgining schema for a Row 
+		RowEncoder take care of assigning schema for a Row 
 		
 2) Row Encoder 
 	Row Encoder is the default applies on DataFrame if no type is provided for serialization.
@@ -31,7 +31,7 @@ About Reader and Writer in DataFrame, DataSet and Streams
  	
  	You get DataFramReader from sparkSession 
  	val dataFrameReader = sparkSession.read
- 	Two ways of reading data is load, format specifi(json, csv, textFile, text e.t.c) which give DataSet
+ 	Two ways of reading data is load, format specify(json, csv, textFile, text e.t.c) which give DataSet
  	
  	Using dataFrame reader we can read data from csv, json, textFile, parquet, jdbc, orc
  	
@@ -66,10 +66,14 @@ About Reader and Writer in DataFrame, DataSet and Streams
 7) DataSet column 
 	* represent all column in DataSet 
 	
+	This 
+	
 	There are different ways we can create a column which can be later added to dataset 
 	
 	Free Column Reference - Columns which are not associated to any dataset 
 		a) org.apache.spark.sql.Column = 'name (This is a free column)
+			using this object we can define any column object and can be used in dataset to represent the columns 
+			
 		b) $prefix - you can create column with $ prefix (You need to have sparkSession implicit objects)
 			val nameCol : Column = $"name"(Another free column)
 		c) Col and Column Function 

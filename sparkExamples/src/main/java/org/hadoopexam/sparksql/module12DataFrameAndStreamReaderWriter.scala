@@ -30,13 +30,23 @@ object module12DataFrameAndStreamReaderWriter {
     if(args.length < 3) {
       
       println("USAGE MASTER INPUTLOC OUTPUTLOC")
-      System.exit(1)
+//      System.exit(1)
     }
     
     
-    val master = args(0)
-    val inputLoc = args(1)
-    val outputLoc = args(2)
+    val master = args.length match {
+      case x:Int if x > 0 =>  args(0)
+      case _ => "local[1]"
+    } 
+    val inputLoc = args.length match {
+      case x:Int if x>1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module12DataFrameAndStreamReaderWriter\\"
+    } 
+    
+    val outputLoc = args.length match {
+      case x:Int if x > 2 => args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module12DataFrameAndStreamReaderWriter\\"
+    } 
     
     val sparkConf = new SparkConf().setMaster(master).setAppName("module12DataFrameAndStreamReaderWriter")
     
@@ -51,11 +61,14 @@ object module12DataFrameAndStreamReaderWriter {
      * inferschema  it can derive the schema 
      */
     println("Reading data from csv file by inferSchema ")
-    sparkSession.read.format("csv").option("header", true).option("inferSchema", true).load(inputLoc+"Training.csv").show()
+   val csvData = sparkSession.read.format("csv").option("header", true).option("inferSchema", true).load(inputLoc+"Training.csv")    
+    csvData.show()
+    csvData.printSchema()
     
-    
-      println("Reading data from csv file by  not inderSchema ")
-    sparkSession.read.format("csv").option("header", true).load(inputLoc+"Training.csv").show()
+      println("Reading data from csv file by  not inferSchema ")
+    val csvDataWithNoSchema = sparkSession.read.format("csv").option("header", true).load(inputLoc+"Training.csv")
+    csvDataWithNoSchema.show()
+    csvDataWithNoSchema.printSchema()
     /*
      * Loading Json file  also we can load from csv, rdbms, orc, parquet, jdbc, 
      * 
@@ -63,26 +76,31 @@ object module12DataFrameAndStreamReaderWriter {
      */    
     
     println("Reading data from JSON file by inderSchema ")
-    sparkSession.read.format("json").option("header", true).option("inferSchema", true).load(inputLoc+"data_1.json").show()
+    val jsonInferSchemaData = sparkSession.read.format("json").option("header", true).option("inferSchema", true).load(inputLoc+"data_1.json")
+    jsonInferSchemaData.show()
+    jsonInferSchemaData.printSchema()
     
     println("Reading data from JSON file by  not inderSchema ")
-    sparkSession.read.format("json").option("header", true).load(inputLoc+"data_1.json").show()
-    
+    val jsonNoInferSchemaData = sparkSession.read.format("json").option("header", true).load(inputLoc+"data_1.json")
+    jsonNoInferSchemaData.show()
+    jsonNoInferSchemaData.printSchema()
     /*
      * Default format is parquet format    
      */
-     println("Defualt format of data is parqut")
+     println("Defualt format for load data is parqut")
 //    sparkSession.read.load(inputLoc+"data_1.json").show()
     
     /*
      * Using json, csv, txt method from DataFrameReader
      */
      println("Reading data using json method using DataFrame reader directly")
-     sparkSession.read.option("inferSchema", true).json(inputLoc+"data_1.json").show()
+     sparkSession.read.option("inferSchema", true).json(inputLoc+"data_1.json").show() 
+     println("Using Dataframe Reader Json method analyzes schema directly")
      sparkSession.read.json(inputLoc+"data_1.json").printSchema()
      
      println("Reading data using csv method using DataFrame reader directly")
      sparkSession.read.option("inferSchema", true).csv(inputLoc+"Training.csv").show()
+     println("Using Dataframe reader csv method does not infer schema directly")
      sparkSession.read.csv(inputLoc+"Training.csv").printSchema()
      
      
@@ -92,22 +110,26 @@ object module12DataFrameAndStreamReaderWriter {
      *  With out above statement you will get error of
      *  could not find implicit value for evidence parameter of type org.apache.spark.sql.Encoder[Array[String]] 
      */
-     sparkSession.read.textFile(inputLoc+"Training.csv").map(x => x.split(",")).show()
+     val trainingDataSetStr = sparkSession.read.textFile(inputLoc+"Training.csv")
+     trainingDataSetStr.map(x => x.split(",")).show()
+     
      
     /*
      * Reading data using schema 
      */
      
      val schame = new StructType().add($"id".int).add($"name".string).add($"fee".long.copy(nullable = false)).add($"venue".string).add($"date".string)
-     
-     sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv").show()
+     println("Reading json data by providing the schema give you a dataframe")
+     val trainingDf = sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv")
+     trainingDf.show()
      
      
      /*
       * Example of reading with schema and writing data with compression 
       * 
       */
-     sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv").write.option("compression", "gzip").save(outputLoc+"Training")
+     println("DataFrame writer used to write the data as parquet file")
+     sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv").write.mode("overwrite").option("compression", "gzip").save(outputLoc+"Training")
    
      println("Reading data from parquet file right away writing it ")
      sparkSession.read.schema(schame).load(outputLoc+"Training").show()
@@ -132,20 +154,30 @@ object module12DataFrameAndStreamReaderWriter {
       */
      //reading data from csv file and writing data to parquet file 
      println("Reading data as CSV file and writing data as parquet format with default compression snappy ")
-     sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv").write.save(outputLoc+"Training1")
+     sparkSession.read.schema(schame).format("csv").load(inputLoc+"Training.csv").write.mode("overwrite")save(outputLoc+"Training1")
      
      //Reading data from csv file and writing data to json format 
      println("Reading data as CSV file and writing data as parquet format with no compression as we are providing format ")     
-     sparkSession.read.format("csv").load(inputLoc+"Training.csv").write.format("json").save(outputLoc+"Trianing_JSON")
+     sparkSession.read.format("csv").load(inputLoc+"Training.csv").write.mode("overwrite").format("json").save(outputLoc+"Trianing_JSON")
      
-     sparkSession.read.textFile(inputLoc+"Training.csv").write.json(outputLoc+"Trianing_JSON1")
+     sparkSession.read.textFile(inputLoc+"Training.csv").write.mode("overwrite")json(outputLoc+"Trianing_JSON1")
+    
      
+     /**
+      * Issues saving data as saveAsTable while running on windows machine with just spark getting below exception 
+      * 
+      * Caused by: java.io.IOException: Mkdirs failed to create file:/C:/Users/swathi%20varun/git/sparkExamples/sparkExamples/spark-warehouse/training_table/_temporary/0/_temporary/attempt_20200503145742_0026_m_000000_26 (exists=false, cwd=file:/C:/Users/swathi varun/git/sparkExamples/sparkExamples)
+	at org.apache.hadoop.fs.ChecksumFileSystem.create(ChecksumFileSystem.java:447)
+      * 
+      * Issue could be as hive does not run on the machine 
+      * 
+      
      //Writing data as a table 
      sparkSession.read.textFile(inputLoc+"Training.csv").write.saveAsTable("TRAINING_TABLE")
      print("After writing the table we check from sql statment ")
      sparkSession.sql("select * from TRAINING_TABLE").show()
 
-     println("List out all table in catalog "+sparkSession.catalog.listTables())
+    
 
      //Saving data by partitioning by type
 
@@ -157,7 +189,11 @@ object module12DataFrameAndStreamReaderWriter {
      sparkSession.read.format("csv").option("header", true).load(inputLoc+"Training.csv").write.insertInto("TRAINING_TABLE")
     println("Number of records in TRAINING_TABLE AFTER ADDING DATA "+sparkSession.sql("select * from TRAINING_TABLE").count())     
   
+  **/
     
+      println("List out all table in catalog ")
+      sparkSession.catalog.listTables().collect().map(x => println(x))
+      
     /*
      * Bound and unbound columns 
      */
