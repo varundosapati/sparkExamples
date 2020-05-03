@@ -137,7 +137,7 @@ object module11SparkSQLSchema {
    
    println("Displaying the dataframe records after applying schema")
    courseDf.show()
-//   sparkSession.creat
+//   sparkSession.createDataFrame
    
    val colorsRDD = sparkContext.parallelize(Seq("White", "blue", "Green" , "Yeallo"))
    
@@ -150,7 +150,18 @@ object module11SparkSQLSchema {
    
    color_df.show()
    
+   /*
+    * What happens we give Row data with wrong schema type what would happen 
+    * 
+    * if action is called and if no action is called 
+    */
+    println("Example of how it failes if wrong schema type is provided")  
+   val course_wrong_detail = StructType(StructField("name", IntegerType, false) :: StructField("fee", StringType, false) :: StructField("city", IntegerType, false) :: Nil)
+  
+   val wrongCourseDF = sparkSession.createDataFrame(sparkContext.parallelize(Seq(row, row1, row2)), course_wrong_detail)
    
-  }
+   println("Failure happens at run time when we call action")
+   wrongCourseDF.show()
+ }
   
 }
