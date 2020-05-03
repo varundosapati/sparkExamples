@@ -3,7 +3,9 @@
 .cache-tests
 .project
 .classpath
+/metastore_db/
 /bin/
+/testdata/udemy/spark/core/output
 /testdata/databricks/output
 /testdata/hadoopexam/sparkSql/output
 /testdata/hadoopexam/output
