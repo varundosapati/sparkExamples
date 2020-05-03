@@ -25,13 +25,22 @@ object module10HandsonDatasetDataFrameDepth {
     
     if(args.length < 3) {
       println("USAGE MASTER INPUTLOC OUTPUTLOC")
-      System.exit(1)
+//      System.exit(1)
     }
     
     
-    val master = args(0)
-    val inputLoc = args(1)
-    val outoutLoc = args(2)
+    val master = args.length match {
+      case x:Int if x>0 => args(0)
+      case _ => "local[1]"
+    } 
+    val inputLoc = args.length match {
+      case x: Int if x> 1 =>  args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module10HandsonDatasetDataFrameDepth\\"
+    }
+    val outoutLoc = args.length match {
+      case x:Int if x >2 =>  args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module10HandsonDatasetDataFrameDepth\\"
+    } 
     
     
     val sparkConf = new SparkConf().setMaster(master).setAppName("module10HandsonDatasetDataFrameDepth")
@@ -84,7 +93,7 @@ object module10HandsonDatasetDataFrameDepth {
     println(courseDS.filter('fee > 5000).explain(true))
     
     //Explain plan Type 3 sql DSL 
-    println("Explain planDataset filter using sql")
+    println("Explain plan Dataset filter using sql")
     println(    courseDS.filter("fee > 5000").explain(true))
 
     /*
@@ -92,10 +101,12 @@ object module10HandsonDatasetDataFrameDepth {
      * Loading two files 
      */
     
-    val jsonDataTwoFilesDS = sparkSesion.read.format("json").load(inputLoc+"data_1.json", inputLoc+"data_2.json").as[Course]
+    //jsonDataTwoFIleDS is DataSet of COurse else it will be a DataFrame
+    val jsonDataTwoFilesDF = sparkSesion.read.format("json").load(inputLoc+"data_1.json", inputLoc+"data_2.json")
   
+    val jsonDataTwoFilesDS = jsonDataTwoFilesDF.as[Course] 
     println("Json data file in sparkSession")
-    println(jsonDataTwoFilesDS)
+    jsonDataTwoFilesDS.show()
     
     //Getting each file loaded 
     println("File names loaded are ")
@@ -132,10 +143,13 @@ object module10HandsonDatasetDataFrameDepth {
     sparkSesion.sql("select * from global_temp.V_GLOBALCOURSE").show()
     
     //Converting Dataset to Dataframe (Strong Typed to genericType) and you even can rename the columns
-    println("Converting Dataset to Dataframe ")
-    val jsonDataTwoFilesDF = jsonDataTwoFilesDS.toDF("NUMBEROFDAYS", "FIXEDFEE", "COURSEID", "COURSE_NAME","TRAINING_VENUE")
-    jsonDataTwoFilesDF.printSchema()
+    println("Trying to convert Dataset to Dataframe by giving different column names")
+    val jsonDataTwoFilesdf = jsonDataTwoFilesDS.toDF("NUMBEROFDAYS", "FIXEDFEE", "COURSEID", "COURSE_NAME","TRAINING_VENUE")
+    jsonDataTwoFilesdf.printSchema()
     
+    println("changing dataframe column name with different names")
+    
+    jsonDataTwoFilesDF.toDF("NUMBEROFDAYS", "FIXEDFEE", "COURSEID", "COURSE_NAME","TRAINING_VENUE").printSchema()
     
     //Again converting dataFrame to Dataset
     println("Again converting DataFrame to Dataset")
@@ -169,8 +183,15 @@ object module10HandsonDatasetDataFrameDepth {
     
     trainigDF.printSchema
     
-    
+    /*
+     * Converting RDD to Dataframe with multiple columns and then lets try to use as[String] for creating the Dataset
+     */
+    val courseDF = courseRdd.toDF("id", "name", "fee", "venue", "duration")
   
+    val coursedataset = courseDF.select("id").as[String]
+    
+    coursedataset.show()
+    
   }
   
   
