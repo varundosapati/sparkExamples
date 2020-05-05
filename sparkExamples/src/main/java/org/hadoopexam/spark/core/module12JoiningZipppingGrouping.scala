@@ -1,6 +1,8 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 object module12JoiningZipppingGrouping {
   /*
@@ -47,7 +49,8 @@ object module12JoiningZipppingGrouping {
    * 
    * 
    */
-  
+
+  Logger.getLogger("org").setLevel(Level.ERROR)
   def main(args:Array[String]) :Unit = {
     
     val master = args.length match {
@@ -61,6 +64,7 @@ object module12JoiningZipppingGrouping {
     /*
      * Exmaple of Cogroups
      */
+    println("Example of Cogroups")
     val input = sc.parallelize(List(1, 2, 3, 1, 3), 1)
     
     val inputa = input.map((_, "a"))
@@ -91,9 +95,10 @@ object module12JoiningZipppingGrouping {
     y.cogroup(x).foreach(println)
     
     /*
-     * Example of inner Join
+     * Example of Join
      */
     
+    println("Example of Left Outer Join / Right Outer Join / Full Outer Join ")
     val inputAnimals = sc.parallelize(List("dog", "salmon", "fish", "salmon", "rat", "elephant"), 3)
     
     val pairRddAnimalByLength = inputAnimals.keyBy(_.length())
@@ -129,7 +134,7 @@ object module12JoiningZipppingGrouping {
      * Make sure the number of elements needs to be same (Else there will be an exeception when elements gets done with action)
      * Also need to have same number of partitions (Else there will be IllegalArgumentException which cannot able to zip unequal partitions)
      */
-    
+    println("Example of Zip ")
     val inputNum = sc.parallelize(1 to 100, 3)
     
     val inputNum1 = sc.parallelize(101 to 200, 3)
