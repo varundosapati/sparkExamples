@@ -1,6 +1,8 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 
 /*
@@ -17,14 +19,25 @@ object module19RemoveHeaderCsvAndMap {
     
     if(args.length < 3) {
       println("USAGE local[1],  inputFIleLocation, outPutFileLocation")
-      System.exit(1)
+//      System.exit(1)
     }
     
-    val master = args(0)
-    val inputFile = args(1)
-    val outputFile = args(2)
+    val master = args.length match {
+      case x:Int if x> 0 => args(0)
+      case _ => "local[1]"
+    } 
+    val inputFile = args.length match {
+      case x: Int if x > 1 => args(1)
+      case _ => "testdata\\hadoopexam\\input\\module19RemoveHeaderCsvAndMap\\"
+    }
+    val outputFile = args.length match {
+      case x : Int if x > 2 => args(2) 
+      case _ => "testdata\\hadoopexam\\output\\module19RemoveHeaderCsvAndMap\\"
+    } 
     
     val sc = new SparkContext(master, "module19RemoveHeaderCsvAndMap", System.getenv("SPARK_HOME"))
+    
+    Logger.getLogger("org").setLevel(Level.ERROR)
     
     val input = sc.textFile(inputFile)
     
