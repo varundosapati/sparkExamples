@@ -21,12 +21,21 @@ object module6JsonDataFrameDataSet {
   def main(args : Array[String]) : Unit = {
     if(args.length < 3){
       println("USAGE MASTER INPUTFILELOC OUTPUTFILELOC")
-      System.exit(1)
+//      System.exit(1)
     }
     
-    val master = args(0)
-    val inputLoc = args(1)
-    val outputLoc = args(2)
+    val master = args.length match {
+      case x:Int if x > 0  =>  args(0)
+      case _ => "local[1]"
+    } 
+    val inputLoc = args.length match {
+      case x:Int if x > 1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module6JsonDataFrameDataSet\\"
+    } 
+    val outputLoc = args.length match {
+      case x:Int if x >2 =>  args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module6JsonDataFrameDataSet\\"
+    } 
     
     val sparkConf = new SparkConf().setMaster(master).setAppName("module6JsonDataFrameDataSet")
     
@@ -76,7 +85,12 @@ object module6JsonDataFrameDataSet {
     
     //Now we can reading the json data by explicityly specifying schema 
     
-    sparkSession.read.format("json").schema(schemaType).load(inputLoc+"data.json").where('fee > 5000).show()
+  val feeJsonData = sparkSession.read.format("json").schema(schemaType).load(inputLoc+"data.json").where('fee > 5000).select("name", "fee", "venue")
+  println("schame of json")
+  feeJsonData.printSchema()
+  println("Getting the Json Data with fee greater than 5000")
+  
+  feeJsonData.show()
     
     /*
      * Loading data using json data and using if condition in sql statement
@@ -98,6 +112,16 @@ object module6JsonDataFrameDataSet {
      .json(outputLoc+"data")
     
     
+     /*
+      * using spark.text and spark.textFile
+      */
+       println("Example of showing how spark read with text[Dataframe] and textFile[Dataset] works")    
+     //Return Dataset
+     val inDF = sparkSession.read.text(inputLoc+"Training.csv")
+     inDF.show()
+     //Return Dataset
+     val inDS = sparkSession.read.textFile(inputLoc+"Training.csv")
+     inDS.show()
   }
   
   
