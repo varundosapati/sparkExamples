@@ -24,18 +24,24 @@ object module5DatasetAndDataFrame {
 
     if (args.length < 2) {
       println("USAGE MASTER OUTPUTLOC")
-      System.exit(1)
+//      System.exit(1)
     }
 
-    val master = args(0)
-    val outputFile = args(1)
+    val master = args.length match {
+      case x : Int if x > 0  =>args(0)
+      case _ => "local[*]"
+    } 
+    val outputFile = args.length match {
+      case x:Int if x> 1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module5DatasetAndDataFrame\\"
+    } 
 
     val sparkContext = new SparkContext(master, "module5DatasetAndDataFrame", System.getenv("SPARK_HOME"))
 
     //Create an Rdd with 5 Course
     val inputRdd = sparkContext.parallelize(Seq(
       Course(1, "Hadoop", 6000, "Mumbai", 5),
-      Course(2, "Spark", 5000, "Pune", 4), Course(3, "Python", 5000, "Hyderbad", 5), Course(4, "Scala", 4000, "Kolkata", 3), Course(5, "Hbase", 7000, "Banglore", 3)))
+      Course(2, "Spark", 5000, "Pune", 4), Course(3, "Python", 5000, "Hyderbad", 5), Course(4, "Scala", 4000, "Kolkata", 3), Course(5, "Hbase", 7000, "Banglore", 3),Course(6, "Hadoop", 10000, "Mumbai", 6) ))
 
       inputRdd.foreach(println)
       
@@ -43,6 +49,18 @@ object module5DatasetAndDataFrame {
 
         import sparkSession.implicits._
 
+    //Convert RDD to dataframe 
+    println("Creating Data frame using RDD")    
+    val inDF = inputRdd.toDF();
+    inDF.show()
+
+    inDF.where("id = 1").show()
+    
+    inDF.where($"id" === 1).show()
+        
+    println("Creating Data set using from Dataframe which is cretaed from RDD")
+    val inDS = inDF.as[Course]
+    inDS.show()    
       
     //Now Convert the above RDD into dataSet , As RDD is infer with schema is automatically converts that for dataset
     
@@ -54,7 +72,7 @@ object module5DatasetAndDataFrame {
     val inputDf = inputDs.toDF()
     
     //Now lets select courses conducted in mumbai and having prices more than 5000
-    //NOTE : using selet which give back the DataFrame with specified columns 
+    //NOTE : using select which give back the DataFrame with specified columns 
     
     val filteredCoursesDf = inputDs.where('fee > 5000).where('venue==="Mumbai").select('name, 'fee, 'duration)
     
@@ -64,11 +82,11 @@ object module5DatasetAndDataFrame {
     //Now instead of using the SparkSQL API  we can do the same thing in SQL
    inputDs.registerTempTable("courses")
    
-   val filteredSqlDS = sparkSession.sql("SELECT name, fee, duration from courses where fee > 5000 and venue == 'Mumbai'")
+   val filteredSqlDF = sparkSession.sql("SELECT name, fee, duration from courses where fee > 5000 and venue == 'Mumbai'")
       
    println("Now Displaying course records running a SQL statement with condition of having fee > 5000 and venue as Mumbai")
    
-   filteredSqlDS.show()
+   filteredSqlDF.show()
 
   /*
    * Without adding this getting java.lang.IllegalArgumentException: Illegal pattern component: XXX 
@@ -80,8 +98,16 @@ object module5DatasetAndDataFrame {
    filteredCoursesDf
      .coalesce(1) 
      /*
-     * Returns a new Dataset that has exactly numPartitions partitions, when the fewer partitions are requested. If a larger number of partitions is requested, it will stay at the current number of partitions. Similar to coalesce defined on an RDD, this operation results in a narrow dependency, e.g. if you go from 1000 partitions to 100 partitions, there will not be a shuffle, instead each of the 100 new partitions will claim 10 of the current partitions.
-     * However, if you're doing a drastic coalesce, e.g. to numPartitions = 1, this may result in your computation taking place on fewer nodes than you like (e.g. one node in the case of numPartitions = 1). To avoid this, you can call repartition. This will add a shuffle step, but means the current upstream partitions will be executed in parallel (per whatever the current partitioning is). 
+     * Returns a new Dataset that has exactly numPartitions partitions, when the fewer partitions are requested. 
+     * If a larger number of partitions is requested, it will stay at the current number of partitions. 
+     * Similar to coalesce defined on an RDD, this operation results in a narrow dependency, 
+     * e.g. if you go from 1000 partitions to 100 partitions, there will not be a shuffle, 
+     * instead each of the 100 new partitions will claim 10 of the current partitions.
+     * 
+     * However, if you're doing a drastic coalesce, e.g. to numPartitions = 1, 
+     * this may result in your computation taking place on fewer nodes than you like 
+     * (e.g. one node in the case of numPartitions = 1). To avoid this, you can call repartition. 
+     * This will add a shuffle step, but means the current upstream partitions will be executed in parallel (per whatever the current partitioning is). 
      */
      .write
 //   .format("com.databricks.spark.csv")
@@ -112,7 +138,7 @@ object module5DatasetAndDataFrame {
     inputDf.filter(inputDf("fee") > 5000).select("venue").show()
     inputDf.filter(inputDf("fee") > 5000).select(inputDf("venue").alias("Location")).show()
     
-    println("Sort the venue in projection ")
+    println("Sort the venue in projection ascending order")
     inputDf.sort("venue").show()
     
     println("Select fee greater than 4000 and sort venue ascending order and fee descing order using sort")
@@ -132,7 +158,11 @@ object module5DatasetAndDataFrame {
     inputDf.na.drop().show()
     //TODO create and example with groupByKey on dataframe and then use filter and sort operation 
     
+    inputDf.select($"name", $"fee", $"venue").groupBy($"venue", $"name", $"fee").count().select($"name", $"fee", $"venue").filter($"venue" === "Mumbai").sort($"fee").show()
     
+    import org.apache.spark.sql.functions._
+    
+    inputDf.groupBy("name").agg(sum("fee").as("Total fee") ).show(false)
   
   }
 
