@@ -1,6 +1,8 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 object module17BroadcastFilter {
 
@@ -17,15 +19,39 @@ object module17BroadcastFilter {
     
     if(args.length < 4) {
       println("USAGE [master] [inputFilePath] [removeMapDataFilePath] [outPutDataFilePath]")   
-      System.exit(1)
+//      System.exit(1)
     }
 
-    val master = args(0)
-    val dataFile = args(1)
-    val filteredFile = args(2)
-    val outFIlePath = args(3)
+    val master = args.length match {
+      case x:Int if x > 0 => {
+        args(0)
+      }
+      case _ => "local[1]"
+    }
+//      args(0)
+    val dataFile = args.length match {
+      case x:Int if x > 1 => {
+         args(1)  
+      }
+      case _ => "testdata\\hadoopexam\\input\\module17BroadcastFIlter\\content.txt"
+    } 
+    
+    val filteredFile = args.length match {
+      case x : Int if x > 2 => {
+        args(2)  
+      }
+      case _ => "testdata\\hadoopexam\\input\\module17BroadcastFIlter\\remove.txt"
+    } 
+    val outFIlePath = args.length match {
+      case x: Int if x > 3 => {
+        args(3)
+      }
+      case _ => "testdata\\hadoopexam\\output\\module17BroadcastFIlter\\result.txt"
+    } 
 
     val sc =new SparkContext(master, "module17BroadcastFilter", System.getenv("SPARK_HOME"))
+    
+    Logger.getLogger("org").setLevel(Level.ERROR)
     
     //Create a dataRdd which point to inputFile
     val dataRdd = sc.textFile(dataFile)
