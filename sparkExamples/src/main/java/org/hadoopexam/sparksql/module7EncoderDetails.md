@@ -3,6 +3,10 @@ Explanation of Sql Encoders
 1) Usage of Implicit Object 
 	import spark.implicit._
 	By having above statement we are going to show the what kind of serialization and de serialization concepts needs to be used 
+	
+	using implicit import by default  have encoder for primitive data types collections and objects 
+
+	Dataframe = Dataset[ROW] which uses the defaultRowEncoder
 
 2) 	Explanation about Encoder 
 	Encoder (Special ser-De for sparkSQL)
