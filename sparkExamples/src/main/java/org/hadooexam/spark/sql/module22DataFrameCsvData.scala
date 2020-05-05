@@ -2,6 +2,10 @@ package org.hadooexam.spark.sql
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+import org.apache.spark.sql.functions._
+
 
 /*
  * Usage Explanation
@@ -24,15 +28,25 @@ object module22DataFrameCsvData {
 
     if(args.length < 3) {
       println("USAGE local[1] inputFile outfile")
-      System.exit(1)
+//      System.exit(1)
     }
     
-    val master = args(0)
-    val inputFile = args(1)
-    val outputFile = args(2)
+    val master = args.length match {
+      case x:Int if x > 0 => args(0)
+      case _ => "local[1]"
+    } 
+    val inputFile = args.length match {
+      case x:Int if x> 1 => args(1)
+      case _ => "testdata\\hadoopexam\\input\\module22DataFrameCsvData\\data.csv"
+    } 
+    val outputFile = args.length match {
+      case x:Int if x > 2 => args(2)
+      case _ => "testdata\\hadoopexam\\input\\module22DataFrameCsvData\\result"
+    } 
     
     val sc = new SparkContext(master, "module22DataFramCsvData", System.getenv("SPARK_HOME"))
     
+    Logger.getLogger("org").setLevel(Level.ERROR)
     val input = sc.textFile(inputFile)
     
     val sqlContext = new SQLContext(sc)
@@ -48,6 +62,7 @@ object module22DataFrameCsvData {
     
     println("Records in dataFrame is ")
     inputDf.show()
+    
     println("Printing first record in dataframe"+inputDf.first().mkString("|"))
     println("Printing total records in dataframe"+inputDf.count())
     
@@ -58,12 +73,21 @@ object module22DataFrameCsvData {
    println("Select all distinct auctionId count "+inputDf.select("acutionid").distinct().count())
     
    
-   println("Select how many bids by item for each auctionId "+inputDf.groupBy("auctionid", "item").count())
+   println("Select how many bids by auctionId, item for each auctionId "+inputDf.groupBy("acutionid", "item").count())
    
-   println("Show min count avg count and max count")
+      println("Select how many bids by item "+inputDf.groupBy("item").count())
    
-//   inputDf.groupBy("auctionid", "item").count().agg(min("count"), avg("count"), max("count"))
-    
+      inputDf.groupBy("item").count().show()
+      
+      
+   println("Show min count avg count and max count by both auctionId and item")
+   
+   inputDf.groupBy("acutionid", "item").count().agg(min("count"), avg("count"), max("count")).show()
+   
+   println("Show min count avg count and max count by both auctionId item")
+   
+   inputDf.groupBy("item").count().agg(min("count"), avg("count"), max("count")).show()
+
    val highPrice = inputDf.filter("price > 100")
    println("High price record in dataframe is ")
    highPrice.show()
@@ -73,23 +97,26 @@ object module22DataFrameCsvData {
     * Register dataframe as temporary table
     */
    
-    inputDf.registerTempTable("datatable")
+    inputDf.createOrReplaceTempView("datatable")
     
     //How many bids per auction 
-    
-    val results = sqlContext.sql("select auctionid, item, count(bid) from datatable GROUP BY auctionid, item")
+    println("Using spark Sql showing each count by auctionId and item")
+    val results = sqlContext.sql("select acutionid, item, count(bid) from datatable GROUP BY acutionid, item")
     
     //display results
 
     results.show()
     
+        println("Using spark Sql showing max price  by item")
     //display max price for auctionid
     
-   val maxresults = sqlContext.sql("select auctionid, MAX(price), FROM datatable GROUP BY item, auctionid")
+   val maxresults = sqlContext.sql("select item, Max(price) FROM datatable GROUP BY item")
     
     maxresults.show()
     
-    val newResult = sqlContext.sql(" select auctionid, item, count(bid) from datatable GROUP BY auctionid, item").explain()
+        println("Using spark Sql showing explain plan of count by auctionId and item")
+    
+    val newResult = sqlContext.sql(" select acutionid, item, count(bid) from datatable GROUP BY acutionid, item").explain()
     
     
   }
