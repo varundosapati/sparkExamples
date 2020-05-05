@@ -1,6 +1,16 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+
+/*
+ * In this module we will go over using accumulators over tranformations and actins 
+ * 
+ * args(0) - local[1]
+ * args(1) - testdata\hadoopexam\input\module15AccumalatorCloudera\
+ * 
+ */
 
 object module15AccumalatorCloudera {
 
@@ -83,7 +93,7 @@ object module15AccumalatorCloudera {
   
   
   def main(args : Array[String]) : Unit = {
-
+    
     val master = args.length match {
       case x:Int if x > 0 => {
         args(0)
@@ -91,54 +101,67 @@ object module15AccumalatorCloudera {
       case _ => "local[1]"
     }
  
+    val inputLoc = args.length match {
+      case x:Int if x > 1 => {
+        args(1)
+      }
+      case _ => "testdata\\hadoopexam\\input\\module15AccumalatorCloudera\\"
+    }
+    
     val sc = new SparkContext(master, "module15AccumulatorCloudera", System.getenv("SPARK_HOME"))
     
+    Logger.getLogger("org").setLevel(Level.ERROR)
     //Example 1
     val ac = sc.accumulator(0)
-    val allWords = sc.textFile("shared_variable").flatMap(_.split("\\W+"))
+    val allWords = sc.textFile(inputLoc).flatMap(_.split("\\W+"))
     allWords.foreach(w => ac += 1)
     println("TotalWords are "+ac.value)
     
     //Example 2
     val accFile1 = sc.accumulator(0)
-    val wordsFile1 = sc.textFile("shared_variable/file1.txt").flatMap(_.split("\\W+"))
+    val wordsFile1 = sc.textFile(inputLoc+"file1.txt").flatMap(_.split("\\W+"))
     wordsFile1.foreach(w => accFile1 += 1)
     println("TotalWords in file1 are "+accFile1.value)    
 
     //Example 3
     val accFile2 = sc.accumulator(0)
-    val wordsFile2 = sc.textFile("shared_variable/file2.txt").flatMap(_.split("\\W+"))
+    val wordsFile2 = sc.textFile(inputLoc+"file2.txt").flatMap(_.split("\\W+"))
     wordsFile2.foreach(w => accFile2 += 1)
     println("TotalWords in file2 are "+accFile2.value)
 
     //Example 4
     val accFile3 = sc.accumulator(0)
-    val wordsFile3 = sc.textFile("shared_variable/file3.txt").flatMap(_.split("\\W+"))
+    val wordsFile3 = sc.textFile(inputLoc+"file3.txt").flatMap(_.split("\\W+"))
     wordsFile3.foreach(w => accFile3 += 1)
     println("TotalWords in file3 are " + accFile3.value)
     
     //Example 5
     val accFile4 = sc.accumulator(0)
-    val wordsFile4 = sc.textFile("shared_variable/file4.txt").flatMap(_.split("\\W+"))
+    val wordsFile4 = sc.textFile(inputLoc+"file4.txt").flatMap(_.split("\\W+"))
     wordsFile4.foreach(w => accFile4 += 1)
     println("TotalWords in file4 are " + accFile4.value)
 
     //Example 6
     val acCharCount = sc.accumulator(0)
-    val allCharWords = sc.textFile("shared_variable").flatMap(_.split("\\W+"))
+    val allCharWords = sc.textFile(inputLoc).flatMap(_.split("\\W+"))
     allCharWords.foreach(w => acCharCount += w.length)
-    println("Total Character in Words in directory shared_variable are " +   acCharCount.value)
+    println("Total Character in Words in directory input directory are " +   acCharCount.value)
 
     //Example 7
 
     val empCount = sc.accumulator(0)
-    val emp = sc.textFile("shared_variable/Employee.txt").map(v => v.split(","))
+    val emp = sc.textFile(inputLoc+"Employee.txt").map(v => v.split(","))
+    println("Printing all employess in Employee.txt")
+
+    emp.collect().foreach(arr => println(arr.mkString("|")) )
     emp.foreach(e => empCount += e(2).toInt)
     println("Total age of all employee are "+empCount.value)
 
     //Example 8
     val badrecords = sc.accumulator(0)
-    val empAllRecords = sc.textFile("shared_variable/Employee.txt").map(v => v.split(","))
+    val empAllRecords = sc.textFile(inputLoc+"Employee_bad.txt").map(v => v.split(","))
+    println("Printing all employess in Employee_bad.txt")
+    empAllRecords.collect().foreach(arr => println(arr.mkString("|")))
     empAllRecords.foreach(v => {
       try { v(2).toInt } catch {
         case e: NumberFormatException =>

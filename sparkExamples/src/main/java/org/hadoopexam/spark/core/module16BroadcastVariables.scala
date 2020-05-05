@@ -1,6 +1,8 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 object module16BroadcastVariables {
   
@@ -15,16 +17,35 @@ object module16BroadcastVariables {
   def main(args : Array[String]) : Unit = {
     if(args.length < 3) {
       println("Usage [master] [processinginputFIlePath] [broadcastInputFilePath]")
-      System.exit(1)
+//      System.exit(1)
       
     }
 
-    val master = args(0)
-    val procssingInputFIlePath = args(1)
-    val broadCastInputfilePath = args(2)
+    val master =  args.length match {
+      case x: Int if x > 0  => {
+        args(0)
+      }
+      case _ => "local[1]"
+    }
+//    args(0)
+    val procssingInputFIlePath = args.length  match {
+      case x :Int if x > 1 => {
+        args(1)
+      }
+      case _ => "testdata\\hadoopexam\\input\\module16Broadcastvariables\\employee.txt"
+    }
+//      args(1)
+
+    val broadCastInputfilePath = args.length match {
+      case x: Int if x > 2 => {
+        args(2)
+      }
+      case _ => "testdata\\hadoopexam\\input\\module16Broadcastvariables\\city.txt"
+    }
+//      args(2)
     
     val sc = new SparkContext(master, "module16BroadCasrVariable", System.getenv("SPARK_HOME"))
-    
+    Logger.getLogger("org").setLevel(Level.ERROR)
     val procssingDataRdd = sc.textFile(procssingInputFIlePath)
     
     val procssingData = procssingDataRdd.map(x => (x.split(",")(1), x.split(",")(2)))
@@ -36,7 +57,7 @@ object module16BroadcastVariables {
     
     val broadcastData = broadcastDataRdd.map(x => (x.split(",")(0) , x.split(",")(1)))
 
-        println("BroadCast variables are")
+    println("BroadCast variables are")
     broadcastData.foreach(println)
     
     val bCities = sc.broadcast(broadcastData.collectAsMap())   
