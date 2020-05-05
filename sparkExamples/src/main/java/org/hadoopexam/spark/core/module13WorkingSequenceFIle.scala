@@ -2,6 +2,8 @@ package org.hadoopexam.spark.core
 
 import org.apache.hadoop.io._
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 /*
  * Working on sequence file 
@@ -38,6 +40,7 @@ import org.apache.spark.SparkContext
  
 object module13WorkingSequenceFIle {
 
+  Logger.getLogger("org").setLevel(Level.ERROR)
   
   def main(args : Array[String]) : Unit = {
 
