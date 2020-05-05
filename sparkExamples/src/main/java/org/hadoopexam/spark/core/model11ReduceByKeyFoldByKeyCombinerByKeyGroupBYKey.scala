@@ -1,6 +1,8 @@
 package org.hadoopexam.spark.core
 
 import org.apache.spark.SparkContext
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
   
@@ -33,7 +35,7 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
    * def groupByKey(partitioner: Partitioner): RDD[k, Iterable[V]]
    */
   
-  
+  Logger.getLogger("org").setLevel(Level.ERROR)
   
   
   
@@ -106,7 +108,8 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
      * In the accumulator the Y value elemnt is added to X List
      * And finally we are combing the x list and y list together
      *
-     *
+     *:: is an operator used add a String element to list of string 
+     * ::: is an operator used to combine both list
      */
 
     val inputa = sc.parallelize(List("dog", "cat", "gnu", "salmon", "rabbit", "turkey", "wolf", "bear", "bee"), 3)
@@ -117,6 +120,22 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
     println("After combing input a and inputb results are")
     resultCombiner.foreach(println)
   
+    val day1 = Map("hadoop" -> 40, "spark" -> 20, "sqoop" -> 30)
+    val day2 = Map("hadoop" -> 60, "spark" -> 30, "sqoop" -> 40, "hive" -> 20)
+    val day3 = Map("hadoop" -> 140, "spark" -> 80, "sqoop" -> 20, "hbase" -> 30)
+    
+    val allDay = sc.parallelize(Seq(day1, day2, day3))
+
+    println("Reduce by key operator for combing all the key")
+    allDay.flatMap(x => x).reduceByKey(_+_).foreach(println)
+    
+    println("Create a three maps and did a parallelize and was able use combine them all the keys together")
+    allDay.flatMap(x => x).combineByKey(
+        c => (c, 1), 
+        (merge:(Int, Int), y) => (merge._1+y, merge._2+1),
+        (reducer1:(Int, Int), reducer2:(Int, Int)) => (reducer1._1+reducer2._1, reducer1._2+reducer2._1)).foreach(println)
+    
+   
     
     /*
      * Group By Key
