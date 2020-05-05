@@ -152,6 +152,9 @@ object module7Transformations {
   
    println("Aggregate of using math with max length "+az.aggregate(" ")((x, y) => math.max(x.length(), y.length()).toString(), _+_))
    
+   val aa = sc.parallelize(List("12", "234", "4563", "23", ""), 2)
+  
+    println("Aggregate of using math with max length "+aa.aggregate("")((x, y) => math.min(x.length(), y.length()).toString(), _+_))
   }
   
   
