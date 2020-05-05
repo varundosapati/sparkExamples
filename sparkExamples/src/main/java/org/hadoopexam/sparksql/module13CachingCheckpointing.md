@@ -38,8 +38,8 @@ In this section we will see the different mechanisim of how Caching and Checkpoi
 		If you a have huge data then for saving the data it take some time
 		 	
 4) DataSet non eager Checkpointing 
-	In this case linage will not be cut 
-	Even after creating checkpointing it will still use linage 
+	In this case lienage will not be cut 
+	Even after creating checkpointing it will still use lineage 
 	
 5) Local Checkpointing
 	Checkpointing does contents of an executor locally. So the data of processing in that executor is saved locally

@@ -2,6 +2,8 @@ package org.hadoopexam.sparksql
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 
 /*
@@ -20,12 +22,22 @@ object module13CachingCheckpointing {
   def main(args : Array[String]) : Unit = {
     if(args.length < 3) {
       println("USAGE MASTER INPUTLOC OUTPUTLOC")
-      System.exit(1)
+//      System.exit(1)
     }
- 
-  val master = args(0)
-  val inputLoc = args(1)
-  val outputLoc = args(2)
+ Logger.getLogger("org").setLevel(Level.ERROR)
+ val master = args.length match {
+      case x:Int if x > 0 =>  args(0)
+      case _ => "local[1]"
+    } 
+    val inputLoc = args.length match {
+      case x:Int if x>1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module13CachingCheckpointing\\"
+    } 
+    
+    val outputLoc = args.length match {
+      case x:Int if x > 2 => args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module13CachingCheckpointing\\"
+    } 
   
   val sparkConf = new SparkConf().setMaster(master).setAppName("module13CachingCheckpointing")
   
@@ -41,7 +53,7 @@ object module13CachingCheckpointing {
   
   val trainingDS = trainingDF.as[Course]
 
-  trainingDS.cache()
+  trainingDS.cache() //until action is called data is not added to cache 
 
   trainingDS.show()
   
