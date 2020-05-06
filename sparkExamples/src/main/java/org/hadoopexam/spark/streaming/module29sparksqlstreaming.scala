@@ -68,7 +68,7 @@ object module29sparksqlstreaming {
     val outputLoc = args(1)
     
     
-    val sparkConf = new SparkConf().setAppName("module29sparksqlstreaming").set("spark.files.overwrite", "true")
+    val sparkConf = new SparkConf().setMaster("local[*]").setAppName("module29sparksqlstreaming").set("spark.files.overwrite", "true")
     
     val sc = new SparkContext(sparkConf)
     
