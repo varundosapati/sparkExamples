@@ -1,0 +1,49 @@
+Apache Hadoop ( /həˈduːp/) is a collection of open-source software utilities that facilitate using a network of many computers to solve problems involving massive amounts of data and computation. It provides a software framework for distributed storage and processing of big data using the MapReduce programming model. Originally designed for computer clusters built from commodity hardware[3]—still the common use—it has also found use on clusters of higher-end hardware.[4][5] All the modules in Hadoop are designed with a fundamental assumption that hardware failures are common occurrences and should be automatically handled by the framework.[6]
+
+The core of Apache Hadoop consists of a storage part, known as Hadoop Distributed File System (HDFS), and a processing part which is a MapReduce programming model. Hadoop splits files into large blocks and distributes them across nodes in a cluster. It then transfers packaged code into nodes to process the data in parallel. This approach takes advantage of data locality,[7] where nodes manipulate the data they have access to. This allows the dataset to be processed faster and more efficiently than it would be in a more conventional supercomputer architecture that relies on a parallel file system where computation and data are distributed via high-speed networking.[8][9]
+
+The base Apache Hadoop framework is composed of the following modules:
+
+Hadoop Common – contains libraries and utilities needed by other Hadoop modules;
+Hadoop Distributed File System (HDFS) – a distributed file-system that stores data on commodity machines, providing very high aggregate bandwidth across the cluster;
+Hadoop YARN – (introduced in 2012) a platform responsible for managing computing resources in clusters and using them for scheduling users' applications;[10][11]
+Hadoop MapReduce – an implementation of the MapReduce programming model for large-scale data processing.
+The term Hadoop is often used for both base modules and sub-modules and also the ecosystem,[12] or collection of additional software packages that can be installed on top of or alongside Hadoop, such as Apache Pig, Apache Hive, Apache HBase, Apache Phoenix, Apache Spark, Apache ZooKeeper, Cloudera Impala, Apache Flume, Apache Sqoop, Apache Oozie, and Apache Storm.[13]
+
+Apache Hadoop's MapReduce and HDFS components were inspired by Google papers on MapReduce and Google File System.[14]
+
+The Hadoop framework itself is mostly written in the Java programming language, with some native code in C and command line utilities written as shell scripts. Though MapReduce Java code is common, any programming language can be used with Hadoop Streaming to implement the map and reduce parts of the user's program.[15] Other projects in the Hadoop ecosystem expose richer user interfaces.
+
+
+Contents
+1	History
+2	Architecture
+2.1	File systems
+2.1.1	Hadoop distributed file system
+2.1.2	Other file systems
+2.2	JobTracker and TaskTracker: the MapReduce engine
+2.2.1	Scheduling
+2.2.1.1	Fair scheduler
+2.2.1.2	Capacity scheduler
+2.3	Difference between Hadoop 1 and Hadoop 2 (YARN)
+2.4	Difference between Hadoop 2 and Hadoop 3
+2.5	Other applications
+3	Prominent use cases
+4	Hadoop hosting in the cloud
+5	Commercial support
+5.1	Branding
+6	Papers
+7	See also
+8	References
+9	Bibliography
+10	External links
+History
+According to its co-founders, Doug Cutting and Mike Cafarella, the genesis of Hadoop was the Google File System paper that was published in October 2003.[16][17] This paper spawned another one from Google – "MapReduce: Simplified Data Processing on Large Clusters".[18] Development started on the Apache Nutch project, but was moved to the new Hadoop subproject in January 2006.[19] Doug Cutting, who was working at Yahoo! at the time, named it after his son's toy elephant.[20] The initial code that was factored out of Nutch consisted of about 5,000 lines of code for HDFS and about 6,000 lines of code for MapReduce.
+
+In March 2006, Owen O’Malley was the first committer to add to the Hadoop project;[21] Hadoop 0.1.0 was released in April 2006.[22] It continues to evolve through contributions that are being made to the project.[23]
+
+Architecture
+See also: Hadoop Distributed File System, Apache HBase, and MapReduce
+Hadoop consists of the Hadoop Common package, which provides file system and operating system level abstractions, a MapReduce engine (either MapReduce/MR1 or YARN/MR2)[24] and the Hadoop Distributed File System (HDFS). The Hadoop Common package contains the Java ARchive (JAR) files and scripts needed to start Hadoop.
+
+For effective scheduling of work, every Hadoop-compatible file system should provide location awareness, which is the name of the rack, specifically the network switch where a worker node is. Hadoop applications can use this information to execute code on the node where the data is, and, failing that, on the same rack/switch to reduce backbone traffic. HDFS uses this method when replicating data for data redundancy across multiple racks. This approach reduces the impact of a rack power outage or switch failure; if any of these hardware failures occurs, the data will remain available.[25]

@@ -1,0 +1,35 @@
+Sqoop is a command-line interface application for transferring data between relational databases and Hadoop.[1]
+
+
+Contents
+1	Description
+2	See also
+3	References
+4	Bibliography
+5	External links
+Description
+Sqoop supports incremental loads of a single table or a free form SQL query as well as saved jobs which can be run multiple times to import updates made to a database since the last import. Imports can also be used to populate tables in Hive or HBase.[2] Exports can be used to put data from Hadoop into a relational database. Sqoop got the name from "SQL-to-Hadoop".[3] Sqoop became a top-level Apache project in March 2012.[4]
+
+Informatica provides a Sqoop-based connector from version 10.1. Pentaho provides open-source Sqoop based connector steps, Sqoop Import[5] and Sqoop Export,[6] in their ETL suite Pentaho Data Integration since version 4.5 of the software.[7] Microsoft uses a Sqoop-based connector to help transfer data from Microsoft SQL Server databases to Hadoop.[8] Couchbase, Inc. also provides a Couchbase Server-Hadoop connector by means of Sqoop.[9]
+
+See also
+Apache Hadoop
+Apache Hive
+Apache Accumulo
+Apache HBase
+References
+ "Hadoop: Apache Sqoop". Retrieved Sep 8, 2012.
+ "Apache Sqoop - Overview". Retrieved Sep 8, 2012.
+ "Introducing Sqoop". Retrieved Jan 1, 2019.
+ "Apache Sqoop Graduates from Incubator". Retrieved Sep 8, 2012.
+ "Sqoop Import". Pentaho. 2015-12-10. Archived from the original on 2015-12-10. Retrieved 2015-12-10. The Sqoop Import job allows you to import data from a relational database into the Hadoop Distributed File System (HDFS) using Apache Sqoop.
+ "Sqoop Export". Pentaho. 2015-12-10. Archived from the original on 2015-12-10. Retrieved 2015-12-10. The Sqoop Export job allows you to export data from Hadoop into an RDBMS using Apache Sqoop.
+ "Big Data Analytics Vendor Pentaho Announces Tighter Integration with Cloudera; Extends Visual Interface to Include Hadoop Sqoop and Oozie". Database Trends and Applications (dbta.com). 2012-07-27. Archived from the original on 2015-12-08. Retrieved 2015-12-08. Pentaho’s Business Analytics 4.5 is now certified on Cloudera’s latest releases, Cloudera Enterprise 4.0 and CDH4. Pentaho also announced that its visual design studio capabilities have been extended to the Sqoop and Oozie components of Hadoop.
+ "Microsoft SQL Server Connector for Apache Hadoop". Retrieved Sep 8, 2012.
+ "Couchbase Hadoop Connector". Archived from the original on 2012-08-25. Retrieved Sep 8, 2012.
+Bibliography
+White, Tom. "Chapter 15: Sqoop". Hadoop: The Definitive Guide (2nd ed.). O'Reilly Media. pp. 477–495. ISBN 978-1-449-38973-4.
+External links
+Official website
+Sqoop Wiki
+Sqoop Users Mailing List Archives
