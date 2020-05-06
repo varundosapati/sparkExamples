@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
+import org.apache.spark.sql.functions
 
 /*
  * Usage - We are going indepth example of Dataset and DataFrame Caching and Checkpointing 
@@ -27,13 +28,23 @@ object module14DatasetJoins {
     
     if(args.length < 3){
       println("USAGE master inputloc outputloc")
-      System.exit(1)
+//      System.exit(1)
     }
     
     
-    val master = args(0)
-    val inputloc = args(1)
-    val outputloc = args(2)
+    val master = args.length match {
+      case x:Int if x > 0 =>  args(0)
+      case _ => "local[1]"
+    } 
+    val inputloc = args.length match {
+      case x:Int if x>1 => args(1)
+      case _ => "testdata\\hadoopexam\\sparkSql\\input\\module14DatasetJoins\\"
+    } 
+    
+    val outputLoc = args.length match {
+      case x:Int if x > 2 => args(2)
+      case _ => "testdata\\hadoopexam\\sparkSql\\output\\module14DatasetJoinss\\"
+    } 
     
     val sparkConf = new SparkConf().setMaster(master).setAppName("module14DatasetJoins")
     
@@ -55,6 +66,11 @@ object module14DatasetJoins {
     println("Inner joing of df1 and df2")
     joindf.show()
     
+    //For getting duplicate column we can use below stantax
+    
+    println("Inner join of df1 and df2 and also get columns on both the tables ")
+    df1.join(df2, df1.col("ID") === df2.col("ID")).show()
+    
     //Left Outer join 
     
     val leftJoin = df1.join(df2, Seq("ID"), "left").orderBy("ID")
@@ -74,6 +90,10 @@ object module14DatasetJoins {
     println("full outer outer join content")
     fullJoin.show()
     
+    //BroadCast join for 
+  
+//    df1.join(broadcast(df2), "ID").show()
+    
     /*
      * Join with operations 
      */
@@ -92,6 +112,7 @@ object module14DatasetJoins {
     
     val innerDS = DS1.joinWith(DS2, DS1("ID") === DS2("ID"))
     println("Using join with operation for inner join of DS1 and DS2")
+//    innerDS.map(x => x._1)
     innerDS.show()
     
     val rightDS = DS1.joinWith(DS2, DS1("ID") === DS2("ID"), "right")
