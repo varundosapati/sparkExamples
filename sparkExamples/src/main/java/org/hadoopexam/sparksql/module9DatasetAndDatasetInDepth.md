@@ -75,8 +75,13 @@ Dataset
 
 	Dataset can infer schema from Json and csv data directly as below 
 	
-	val ds: [classDS] = sparkSession.read.json(path)
-	val ds: [classDS] = sparkSession.read.csv(path)
+	val df: [Row] = sparkSession.read.json(path)
+	val df: [Row] = sparkSession.read.csv(path)
+	
+	//If we inferschema in option then 
+	
+	val ds: [classDS] = sparkSession.read.option("inferSchema", true).json(path)
+	val ds: [classDS] = sparkSession.read.option("inferSchema", true).csv(path)
 	
 6) Dataset using programmatic schema
 	
