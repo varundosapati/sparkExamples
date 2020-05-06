@@ -39,7 +39,6 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
   
   
   
-  
   def main(args: Array[String]):Unit ={
     
     val master = args.length match {
@@ -119,24 +118,6 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
 
     println("After combing input a and inputb results are")
     resultCombiner.foreach(println)
-  
-    val day1 = Map("hadoop" -> 40, "spark" -> 20, "sqoop" -> 30)
-    val day2 = Map("hadoop" -> 60, "spark" -> 30, "sqoop" -> 40, "hive" -> 20)
-    val day3 = Map("hadoop" -> 140, "spark" -> 80, "sqoop" -> 20, "hbase" -> 30)
-    
-    val allDay = sc.parallelize(Seq(day1, day2, day3))
-
-    println("Reduce by key operator for combing all the key")
-    allDay.flatMap(x => x).reduceByKey(_+_).foreach(println)
-    
-    println("Create a three maps and did a parallelize and was able use combine them all the keys together")
-    allDay.flatMap(x => x).combineByKey(
-        c => (c, 1), 
-        (merge:(Int, Int), y) => (merge._1+y, merge._2+1),
-        (reducer1:(Int, Int), reducer2:(Int, Int)) => (reducer1._1+reducer2._1, reducer1._2+reducer2._1)).foreach(println)
-    
-   
-    
     /*
      * Group By Key
      */
@@ -152,6 +133,27 @@ object model11ReduceByKeyFoldByKeyCombinerByKeyGroupBYKey {
       println("Grouping the keys sum of words input ")
      wordCountPairRdd.groupByKey().foreach(println)
     
+     val day1 = Map("hadoop" ->  50, "spark" -> 70, "sqoop" -> 20)
+     val day2 = Map("hadoop" ->  110, "spark" -> 80 )
+     val day3 = Map("hadoop" ->  150, "spark" -> 90, "sqoop" -> 10)
      
+     val allDay = Map("hadoop" ->  50, "spark" -> 70, "sqoop" -> 20, "hadoop" ->  110, "spark" -> 80 , "hadoop" ->  150, "spark" -> 90, "sqoop" -> 10, "hive" -> 90)
+     val strInputRDD = sc.parallelize(allDay.toSeq)
+     //ReuceByKey
+     println("Reducey by key function example using pair RDD")
+     strInputRDD.reduceByKey(_+_).foreach(println)
+     //FoldbyKey
+      val foldallDay = Map("hadoop" ->  50, "spark" -> 70, "sqoop" -> 20, "hadoop" ->  110, "spark" -> 80 , "hadoop" ->  150, "spark" -> 90, "sqoop" -> 10, "hive" -> 90)
+     val foldStrInputRDD = sc.parallelize(allDay.toSeq)
+
+     println("Fold By Key function example using pair RDD")
+     val foldedResult = foldStrInputRDD.foldByKey(0)(_+_)
+     foldedResult.foreach(println)
+     
+     //CombineByKey
+     
+//     strInputRDD.combineByKey(v =>  (v, 1), (x, y) => , mergeCombiners)
+     
+     //aggregare
   }
 }
