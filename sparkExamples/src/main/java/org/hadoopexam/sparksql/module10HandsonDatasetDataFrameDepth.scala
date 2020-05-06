@@ -5,6 +5,10 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.types.DateType
 
 
 /*
@@ -178,8 +182,11 @@ object module10HandsonDatasetDataFrameDepth {
     //Create an DataFrame with 5 Courses 
 //    sparkSesion.createDataFrame(Seq(Course(1, "Hadoop", 6000, "Mumbai", 5),Course(2, "Spark", 5000, "Pune", 4),Course(3, "Python", 4000, "Hyderabad", 3) ,Course(4, "Scala", 4000, "Kolkata", 3),Course(5, "HBase", 7000, "Banglore", 7))).show() 
  
-    //Creating DataFrame from csv file 
+    //Creating DataFrame from csv file
+    println("Reading data using com.databrick.spark.csv format and using headerOption for reading data in Training.csv file")
     val trainigDF = sparkSesion.read.format("com.databricks.spark.csv").option("header", "true").load(inputLoc+"Training.csv") 
+   
+    trainigDF.show()
     
     trainigDF.printSchema
     
@@ -191,6 +198,19 @@ object module10HandsonDatasetDataFrameDepth {
     val coursedataset = courseDF.select("id").as[String]
     
     coursedataset.show()
+    
+    /*
+     * Example of creating a schema with StructType and StructField and accessing csv data 
+     * ID,Name,Fee,Venue,Date,Duration
+     */
+    println("Reading Training.csv data by adding schema and provinding header option")
+    val schema = new StructType().add("ID", IntegerType, false)
+                   .add("Name", StringType, false)
+                   
+//     val trainDf = sparkSesion.read.format("csv").schema(schema).load(inputLoc+"Training.csv").toDF("ID", "Name", "Fee", "Venue", "Date", "Duration")
+     
+     val trainDf = sparkSesion.read.format("csv").schema(schema).load(inputLoc+"test.csv").toDF() 
+     trainDf.show()
     
   }
   
