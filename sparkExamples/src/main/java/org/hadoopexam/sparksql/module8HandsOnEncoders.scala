@@ -1,5 +1,8 @@
 package org.hadoopexam.sparksql
 
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+
 
 /*
  * Usage - We are going to Using the encoder usage
@@ -19,14 +22,16 @@ object module8HandsOnEncoders {
 //    println(" USAGE MASTER INPUTLOC OUTPUTLOC")
 //    System.exit(1)
 //  }
-    
+ 
+    Logger.getLogger("org").setLevel(Level.ERROR)
   import org.apache.spark.sql.Encoders
   
   //Create encoders as Course
   val courseEncoders = Encoders.product[Course]
 
   //Check whether encoder hold the schema inforamtion or not and this schema is used to encode the object as row
-  courseEncoders.schema
+    println("schema of Course Encoder")
+    println(courseEncoders.schema)
   
   
   /*
@@ -38,9 +43,10 @@ object module8HandsOnEncoders {
   courseEncoders.asInstanceOf[ExpressionEncoder[Course]]
   
   //Getting serialization and de Serialization of Encoders 
-  
+  println("Expression Encoder serialization information")
   println(courseEncoders.asInstanceOf[ExpressionEncoder[Course]].serializer)
   
+  println("Expression Encoder Deserilalization information")
   println(courseEncoders.asInstanceOf[ExpressionEncoder[Course]].deserializer)
   
   
